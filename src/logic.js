@@ -35,3 +35,30 @@ export function calculateRealisedHours(useCases) {
 export function calculateExpectedHours(useCases) {
   return calculateTotalHours(useCases.filter((useCase) => useCase.status === 'Pilot'));
 }
+
+export function updateUseCase(useCases, id, candidate) {
+  const { valid, errors } = validateUseCase(candidate);
+
+  if (!valid) {
+    return { valid, errors, useCases };
+  }
+
+  const updated = {
+    id,
+    name: String(candidate.name).trim(),
+    owner: String(candidate.owner).trim(),
+    team: String(candidate.team).trim(),
+    status: candidate.status,
+    hoursSaved: Number(candidate.hoursSaved),
+  };
+
+  return {
+    valid: true,
+    errors: {},
+    useCases: useCases.map((useCase) => (useCase.id === id ? updated : useCase)),
+  };
+}
+
+export function removeUseCase(useCases, id) {
+  return useCases.filter((useCase) => useCase.id !== id);
+}

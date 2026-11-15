@@ -8,6 +8,8 @@ import {
   calculateTotalHours,
   calculateRealisedHours,
   calculateExpectedHours,
+  updateUseCase,
+  removeUseCase,
   STATUSES,
 } from '../src/logic.js';
 
@@ -146,5 +148,50 @@ describe('validateUseCase - rejected', () => {
     const result = validateUseCase({ ...base, hoursSaved: '' });
     assert.equal(result.valid, false);
     assert.ok(result.errors.hoursSaved);
+  });
+});
+
+describe('updateUseCase', () => {
+  const base = [
+    { id: 1, name: 'A', owner: 'Jane', team: 'Ops', status: 'Idea', hoursSaved: 2 },
+    { id: 2, name: 'B', owner: 'Jo', team: 'Eng', status: 'Pilot', hoursSaved: 3 },
+  ];
+  const edit = { name: 'A2', owner: 'Jane', team: 'Ops', status: 'In production', hoursSaved: 9 };
+
+  test('replaces the matching row and preserves its id', () => {
+    const result = updateUseCase(base, 1, edit);
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.useCases[0], { id: 1, name: 'A2', owner: 'Jane', team: 'Ops', status: 'In production', hoursSaved: 9 });
+    assert.deepEqual(result.useCases[1], base[1]);
+  });
+
+  test('rejects invalid candidate data and leaves the list unchanged', () => {
+    const result = updateUseCase(base, 1, { ...edit, name: '' });
+    assert.equal(result.valid, false);
+    assert.ok(result.errors.name);
+    assert.deepEqual(result.useCases, base);
+  });
+
+  test('leaves the list unchanged when no row matches the id', () => {
+    const result = updateUseCase(base, 999, edit);
+    assert.equal(result.valid, true);
+    assert.deepEqual(result.useCases, base);
+  });
+});
+
+describe('removeUseCase', () => {
+  const base = [
+    { id: 1, name: 'A', owner: 'Jane', team: 'Ops', status: 'Idea', hoursSaved: 2 },
+    { id: 2, name: 'B', owner: 'Jo', team: 'Eng', status: 'Pilot', hoursSaved: 3 },
+  ];
+
+  test('removes the row with the matching id', () => {
+    const result = removeUseCase(base, 1);
+    assert.deepEqual(result, [base[1]]);
+  });
+
+  test('leaves the list unchanged when no row matches the id', () => {
+    const result = removeUseCase(base, 999);
+    assert.deepEqual(result, base);
   });
 });

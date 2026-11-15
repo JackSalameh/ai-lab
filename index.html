@@ -17,6 +17,7 @@
         <th>Team</th>
         <th>Status</th>
         <th>Hours saved / week</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody id="use-case-table-body"></tbody>
@@ -55,7 +56,8 @@
       Hours saved per week
       <input type="text" id="field-hours" name="hoursSaved" />
     </label>
-    <button type="submit">Add use case</button>
+    <button type="submit" id="submit-button">Add use case</button>
+    <button type="button" id="cancel-edit-button" hidden>Cancel</button>
     <div id="form-errors" role="alert"></div>
   </form>
 

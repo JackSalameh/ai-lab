@@ -1,4 +1,11 @@
-import { validateUseCase, calculateTotalHours, calculateRealisedHours, calculateExpectedHours } from './logic.js';
+import {
+  validateUseCase,
+  calculateTotalHours,
+  calculateRealisedHours,
+  calculateExpectedHours,
+  updateUseCase,
+  removeUseCase,
+} from './logic.js';
 
 const STORAGE_KEY = 'aiUseCases';
 
@@ -8,7 +15,11 @@ const realisedHoursEl = document.getElementById('realised-hours');
 const expectedHoursEl = document.getElementById('expected-hours');
 const form = document.getElementById('add-use-case-form');
 const formErrorsEl = document.getElementById('form-errors');
+const submitButton = document.getElementById('submit-button');
+const cancelEditButton = document.getElementById('cancel-edit-button');
 const exportButton = document.getElementById('export-json-button');
+
+let editingId = null;
 
 function loadUseCases() {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -37,12 +48,56 @@ function render(useCases) {
       <td>${escapeHtml(useCase.team)}</td>
       <td>${escapeHtml(useCase.status)}</td>
       <td>${Number(useCase.hoursSaved)}</td>
+      <td>
+        <button type="button" class="edit-button" data-id="${useCase.id}">Edit</button>
+        <button type="button" class="delete-button" data-id="${useCase.id}">Delete</button>
+      </td>
     `;
     tableBody.appendChild(row);
   }
   totalHoursEl.textContent = calculateTotalHours(useCases);
   realisedHoursEl.textContent = calculateRealisedHours(useCases);
   expectedHoursEl.textContent = calculateExpectedHours(useCases);
+}
+
+function resetFormToAddMode() {
+  editingId = null;
+  form.reset();
+  submitButton.textContent = 'Add use case';
+  cancelEditButton.hidden = true;
+  formErrorsEl.textContent = '';
+}
+
+function onEditClick(id) {
+  const useCase = currentUseCases.find((item) => item.id === id);
+  if (!useCase) return;
+
+  form.name.value = useCase.name;
+  form.owner.value = useCase.owner;
+  form.team.value = useCase.team;
+  form.status.value = useCase.status;
+  form.hoursSaved.value = useCase.hoursSaved;
+
+  editingId = id;
+  submitButton.textContent = 'Save changes';
+  cancelEditButton.hidden = false;
+  formErrorsEl.textContent = '';
+}
+
+function onDeleteClick(id) {
+  const useCase = currentUseCases.find((item) => item.id === id);
+  if (!useCase) return;
+
+  const confirmed = window.confirm(`Delete "${useCase.name}"? This cannot be undone.`);
+  if (!confirmed) return;
+
+  currentUseCases = removeUseCase(currentUseCases, id);
+  saveUseCases(currentUseCases);
+  render(currentUseCases);
+
+  if (editingId === id) {
+    resetFormToAddMode();
+  }
 }
 
 function escapeHtml(value) {
@@ -62,6 +117,22 @@ loadUseCases().then((useCases) => {
   render(currentUseCases);
 });
 
+tableBody.addEventListener('click', (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const id = Number(target.dataset.id);
+  if (target.classList.contains('edit-button')) {
+    onEditClick(id);
+  } else if (target.classList.contains('delete-button')) {
+    onDeleteClick(id);
+  }
+});
+
+cancelEditButton.addEventListener('click', () => {
+  resetFormToAddMode();
+});
+
 form.addEventListener('submit', (event) => {
   event.preventDefault();
 
@@ -72,6 +143,21 @@ form.addEventListener('submit', (event) => {
     status: form.status.value,
     hoursSaved: form.hoursSaved.value.trim(),
   };
+
+  if (editingId !== null) {
+    const result = updateUseCase(currentUseCases, editingId, candidate);
+
+    if (!result.valid) {
+      formErrorsEl.textContent = Object.values(result.errors).join(' ');
+      return;
+    }
+
+    currentUseCases = result.useCases;
+    saveUseCases(currentUseCases);
+    render(currentUseCases);
+    resetFormToAddMode();
+    return;
+  }
 
   const { valid, errors } = validateUseCase(candidate);
 
