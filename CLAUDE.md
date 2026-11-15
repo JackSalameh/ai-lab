@@ -26,4 +26,9 @@ Static site (HTML/CSS/vanilla JS, ES modules, no build step, no npm dependencies
 
 ### Current scope
 
-v1 is add-only (via the form on `index.html`). Editing or deleting existing rows is intentionally not implemented yet.
+The form on `index.html` supports add, edit, and delete for rows, plus a "Reset to starting data" button that reloads `data/use-cases.json`.
+
+## Known limitations
+
+- "Reset to starting data" re-fetches `data/use-cases.json` live when clicked, so it needs the file served over http(s) — like the initial seeding, it fails under `file://` (see `server.js` above).
+- On GitHub Pages, Reset loads whatever `data/use-cases.json` contains in the *currently deployed* version of the repo, which may differ from the seed data a visitor originally saw if that file changed since their first visit.

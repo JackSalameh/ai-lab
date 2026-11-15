@@ -18,6 +18,8 @@ const formErrorsEl = document.getElementById('form-errors');
 const submitButton = document.getElementById('submit-button');
 const cancelEditButton = document.getElementById('cancel-edit-button');
 const exportButton = document.getElementById('export-json-button');
+const resetButton = document.getElementById('reset-button');
+const resetErrorsEl = document.getElementById('reset-errors');
 
 let editingId = null;
 
@@ -191,4 +193,27 @@ exportButton.addEventListener('click', () => {
   link.download = 'use-cases.json';
   link.click();
   URL.revokeObjectURL(url);
+});
+
+resetButton.addEventListener('click', async () => {
+  const confirmed = window.confirm(
+    'Resetting will replace all current data with the starting data and cannot be undone. Export JSON first if you want to keep a copy. Continue?'
+  );
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch('data/use-cases.json');
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    const seedData = await response.json();
+
+    currentUseCases = seedData;
+    saveUseCases(currentUseCases);
+    render(currentUseCases);
+    resetFormToAddMode();
+    resetErrorsEl.textContent = '';
+  } catch (error) {
+    resetErrorsEl.textContent = 'Could not load starting data. Your current data has not been changed.';
+  }
 });
