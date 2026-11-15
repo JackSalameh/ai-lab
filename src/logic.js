@@ -27,3 +27,11 @@ export function validateUseCase({ name, owner, team, status, hoursSaved }) {
 export function calculateTotalHours(useCases) {
   return useCases.reduce((total, useCase) => total + Number(useCase.hoursSaved || 0), 0);
 }
+
+export function calculateRealisedHours(useCases) {
+  return calculateTotalHours(useCases.filter((useCase) => useCase.status === 'In production'));
+}
+
+export function calculateExpectedHours(useCases) {
+  return calculateTotalHours(useCases.filter((useCase) => useCase.status === 'Pilot'));
+}

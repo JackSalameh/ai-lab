@@ -3,7 +3,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { validateUseCase, calculateTotalHours, STATUSES } from '../src/logic.js';
+import {
+  validateUseCase,
+  calculateTotalHours,
+  calculateRealisedHours,
+  calculateExpectedHours,
+  STATUSES,
+} from '../src/logic.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const seedUseCases = JSON.parse(
@@ -24,6 +30,44 @@ describe('calculateTotalHours', () => {
       calculateTotalHours([{ hoursSaved: 2.5 }, { hoursSaved: 1.5 }]),
       4
     );
+  });
+});
+
+describe('calculateRealisedHours', () => {
+  test('sums only "In production" rows in the seed data to 10 hours', () => {
+    assert.equal(calculateRealisedHours(seedUseCases), 10);
+  });
+
+  test('returns 0 for an empty list', () => {
+    assert.equal(calculateRealisedHours([]), 0);
+  });
+
+  test('ignores Idea, Pilot, and Stopped rows', () => {
+    const useCases = [
+      { status: 'Idea', hoursSaved: 3 },
+      { status: 'Pilot', hoursSaved: 5 },
+      { status: 'Stopped', hoursSaved: 7 },
+    ];
+    assert.equal(calculateRealisedHours(useCases), 0);
+  });
+});
+
+describe('calculateExpectedHours', () => {
+  test('sums only "Pilot" rows in the seed data to 10 hours', () => {
+    assert.equal(calculateExpectedHours(seedUseCases), 10);
+  });
+
+  test('returns 0 for an empty list', () => {
+    assert.equal(calculateExpectedHours([]), 0);
+  });
+
+  test('ignores Idea, In production, and Stopped rows', () => {
+    const useCases = [
+      { status: 'Idea', hoursSaved: 3 },
+      { status: 'In production', hoursSaved: 5 },
+      { status: 'Stopped', hoursSaved: 7 },
+    ];
+    assert.equal(calculateExpectedHours(useCases), 0);
   });
 });
 

@@ -1,9 +1,11 @@
-import { validateUseCase, calculateTotalHours } from './logic.js';
+import { validateUseCase, calculateTotalHours, calculateRealisedHours, calculateExpectedHours } from './logic.js';
 
 const STORAGE_KEY = 'aiUseCases';
 
 const tableBody = document.getElementById('use-case-table-body');
 const totalHoursEl = document.getElementById('total-hours');
+const realisedHoursEl = document.getElementById('realised-hours');
+const expectedHoursEl = document.getElementById('expected-hours');
 const form = document.getElementById('add-use-case-form');
 const formErrorsEl = document.getElementById('form-errors');
 const exportButton = document.getElementById('export-json-button');
@@ -39,6 +41,8 @@ function render(useCases) {
     tableBody.appendChild(row);
   }
   totalHoursEl.textContent = calculateTotalHours(useCases);
+  realisedHoursEl.textContent = calculateRealisedHours(useCases);
+  expectedHoursEl.textContent = calculateExpectedHours(useCases);
 }
 
 function escapeHtml(value) {
