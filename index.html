@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Use-Case Tracker</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <h1>AI Use-Case Tracker</h1>
+
+  <table id="use-case-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Owner</th>
+        <th>Team</th>
+        <th>Status</th>
+        <th>Hours saved / week</th>
+      </tr>
+    </thead>
+    <tbody id="use-case-table-body"></tbody>
+  </table>
+
+  <p id="total-hours-row">Total hours saved per week: <span id="total-hours">0</span></p>
+
+  <h2>Add a use case</h2>
+  <form id="add-use-case-form">
+    <label>
+      Name
+      <input type="text" id="field-name" name="name" />
+    </label>
+    <label>
+      Owner
+      <input type="text" id="field-owner" name="owner" />
+    </label>
+    <label>
+      Team
+      <input type="text" id="field-team" name="team" />
+    </label>
+    <label>
+      Status
+      <select id="field-status" name="status">
+        <option>Idea</option>
+        <option>Pilot</option>
+        <option>In production</option>
+        <option>Stopped</option>
+      </select>
+    </label>
+    <label>
+      Hours saved per week
+      <input type="text" id="field-hours" name="hoursSaved" />
+    </label>
+    <button type="submit">Add use case</button>
+    <div id="form-errors" role="alert"></div>
+  </form>
+
+  <button id="export-json-button" type="button">Export JSON</button>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

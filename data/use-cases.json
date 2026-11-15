@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Meeting Notes Summarizer",
+    "owner": "Priya Shah",
+    "team": "Operations",
+    "status": "In production",
+    "hoursSaved": 6
+  },
+  {
+    "id": 2,
+    "name": "Support Ticket Triage Bot",
+    "owner": "Diego Ramirez",
+    "team": "Customer Support",
+    "status": "Pilot",
+    "hoursSaved": 10
+  },
+  {
+    "id": 3,
+    "name": "Invoice Data Extraction",
+    "owner": "Hannah Cole",
+    "team": "Finance",
+    "status": "Idea",
+    "hoursSaved": 0
+  },
+  {
+    "id": 4,
+    "name": "Code Review Assistant",
+    "owner": "Tomasz Novak",
+    "team": "Engineering",
+    "status": "In production",
+    "hoursSaved": 4
+  },
+  {
+    "id": 5,
+    "name": "Legacy Chatbot Pilot",
+    "owner": "Amara Okafor",
+    "team": "Marketing",
+    "status": "Stopped",
+    "hoursSaved": 0
+  }
+]
