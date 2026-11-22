@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          { "type": "command", "command": "npm test 1>&2 || exit 2" }
+        ]
+      }
+    ]
+  }
+}
