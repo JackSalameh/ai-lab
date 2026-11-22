@@ -66,6 +66,24 @@ export function sortByHours(useCases, direction = 'asc') {
   );
 }
 
+const CSV_COLUMNS = ['id', 'name', 'owner', 'team', 'status', 'hoursSaved'];
+
+function escapeCsvField(value) {
+  const text = String(value);
+  if (/[",\r\n]/.test(text)) {
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+  return text;
+}
+
+export function toCsv(useCases) {
+  const lines = [CSV_COLUMNS.join(',')];
+  for (const useCase of useCases) {
+    lines.push(CSV_COLUMNS.map((column) => escapeCsvField(useCase[column])).join(','));
+  }
+  return lines.join('\r\n');
+}
+
 export function removeUseCase(useCases, id) {
   return useCases.filter((useCase) => useCase.id !== id);
 }

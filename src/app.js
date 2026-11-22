@@ -6,6 +6,7 @@ import {
   updateUseCase,
   removeUseCase,
   sortByHours,
+  toCsv,
 } from './logic.js';
 
 const STORAGE_KEY = 'aiUseCases';
@@ -19,6 +20,7 @@ const formErrorsEl = document.getElementById('form-errors');
 const submitButton = document.getElementById('submit-button');
 const cancelEditButton = document.getElementById('cancel-edit-button');
 const exportButton = document.getElementById('export-json-button');
+const exportCsvButton = document.getElementById('export-csv-button');
 const resetButton = document.getElementById('reset-button');
 const resetErrorsEl = document.getElementById('reset-errors');
 const sortHoursButton = document.getElementById('sort-hours-button');
@@ -203,6 +205,16 @@ exportButton.addEventListener('click', () => {
   const link = document.createElement('a');
   link.href = url;
   link.download = 'use-cases.json';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+exportCsvButton.addEventListener('click', () => {
+  const blob = new Blob([toCsv(currentUseCases)], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'use-cases.csv';
   link.click();
   URL.revokeObjectURL(url);
 });

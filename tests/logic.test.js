@@ -11,6 +11,7 @@ import {
   updateUseCase,
   removeUseCase,
   sortByHours,
+  toCsv,
   STATUSES,
 } from '../src/logic.js';
 
@@ -214,6 +215,53 @@ describe('sortByHours', () => {
       { id: 3, hoursSaved: 2.5 },
     ];
     assert.deepEqual(sortByHours(multiDigit).map((u) => u.id), [3, 2, 1]);
+  });
+});
+
+describe('toCsv', () => {
+  test('returns just the header row for an empty list', () => {
+    assert.equal(toCsv([]), 'id,name,owner,team,status,hoursSaved');
+  });
+
+  test('converts a single row in field order', () => {
+    const rows = [
+      { id: 1, name: 'A', owner: 'Jane', team: 'Ops', status: 'Idea', hoursSaved: 2 },
+    ];
+    assert.equal(
+      toCsv(rows),
+      'id,name,owner,team,status,hoursSaved\r\n1,A,Jane,Ops,Idea,2'
+    );
+  });
+
+  test('joins multiple rows with CRLF line endings', () => {
+    const rows = [
+      { id: 1, name: 'A', owner: 'Jane', team: 'Ops', status: 'Idea', hoursSaved: 2 },
+      { id: 2, name: 'B', owner: 'Jo', team: 'Eng', status: 'Pilot', hoursSaved: 3 },
+    ];
+    assert.equal(
+      toCsv(rows),
+      'id,name,owner,team,status,hoursSaved\r\n1,A,Jane,Ops,Idea,2\r\n2,B,Jo,Eng,Pilot,3'
+    );
+  });
+
+  test('wraps a field containing a comma in quotes', () => {
+    const rows = [
+      { id: 1, name: 'A, Inc', owner: 'Jane', team: 'Ops', status: 'Idea', hoursSaved: 2 },
+    ];
+    assert.equal(
+      toCsv(rows),
+      'id,name,owner,team,status,hoursSaved\r\n1,"A, Inc",Jane,Ops,Idea,2'
+    );
+  });
+
+  test('escapes an embedded double quote by doubling it', () => {
+    const rows = [
+      { id: 1, name: 'A "big" idea', owner: 'Jane', team: 'Ops', status: 'Idea', hoursSaved: 2 },
+    ];
+    assert.equal(
+      toCsv(rows),
+      'id,name,owner,team,status,hoursSaved\r\n1,"A ""big"" idea",Jane,Ops,Idea,2'
+    );
   });
 });
 
