@@ -16,7 +16,7 @@
         <th>Owner</th>
         <th>Team</th>
         <th>Status</th>
-        <th>Hours saved / week</th>
+        <th><button type="button" id="sort-hours-button">Hours saved / week <span id="sort-hours-indicator"></span></button></th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -62,6 +62,7 @@
   </form>
 
   <button id="export-json-button" type="button">Export JSON</button>
+  <button id="export-csv-button" type="button">Export CSV</button>
   <button id="reset-button" type="button">Reset to starting data</button>
   <div id="reset-errors" role="alert"></div>
 
