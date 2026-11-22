@@ -5,6 +5,7 @@ import {
   calculateExpectedHours,
   updateUseCase,
   removeUseCase,
+  sortByHours,
 } from './logic.js';
 
 const STORAGE_KEY = 'aiUseCases';
@@ -20,8 +21,11 @@ const cancelEditButton = document.getElementById('cancel-edit-button');
 const exportButton = document.getElementById('export-json-button');
 const resetButton = document.getElementById('reset-button');
 const resetErrorsEl = document.getElementById('reset-errors');
+const sortHoursButton = document.getElementById('sort-hours-button');
+const sortHoursIndicator = document.getElementById('sort-hours-indicator');
 
 let editingId = null;
+let sortDirection = null;
 
 function loadUseCases() {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -41,8 +45,10 @@ function saveUseCases(useCases) {
 }
 
 function render(useCases) {
+  const rows = sortDirection ? sortByHours(useCases, sortDirection) : useCases;
+
   tableBody.innerHTML = '';
-  for (const useCase of useCases) {
+  for (const useCase of rows) {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${escapeHtml(useCase.name)}</td>
@@ -133,6 +139,12 @@ tableBody.addEventListener('click', (event) => {
 
 cancelEditButton.addEventListener('click', () => {
   resetFormToAddMode();
+});
+
+sortHoursButton.addEventListener('click', () => {
+  sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  sortHoursIndicator.textContent = sortDirection === 'asc' ? '▲' : '▼';
+  render(currentUseCases);
 });
 
 form.addEventListener('submit', (event) => {

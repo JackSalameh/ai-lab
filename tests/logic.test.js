@@ -10,6 +10,7 @@ import {
   calculateExpectedHours,
   updateUseCase,
   removeUseCase,
+  sortByHours,
   STATUSES,
 } from '../src/logic.js';
 
@@ -176,6 +177,43 @@ describe('updateUseCase', () => {
     const result = updateUseCase(base, 999, edit);
     assert.equal(result.valid, true);
     assert.deepEqual(result.useCases, base);
+  });
+});
+
+describe('sortByHours', () => {
+  const base = [
+    { id: 1, name: 'A', hoursSaved: 5 },
+    { id: 2, name: 'B', hoursSaved: 1 },
+    { id: 3, name: 'C', hoursSaved: 3 },
+  ];
+
+  test('sorts ascending by hoursSaved by default', () => {
+    const result = sortByHours(base);
+    assert.deepEqual(result.map((u) => u.id), [2, 3, 1]);
+  });
+
+  test('sorts descending by hoursSaved when direction is "desc"', () => {
+    const result = sortByHours(base, 'desc');
+    assert.deepEqual(result.map((u) => u.id), [1, 3, 2]);
+  });
+
+  test('does not mutate the original array', () => {
+    const copy = base.map((u) => ({ ...u }));
+    sortByHours(base, 'desc');
+    assert.deepEqual(base, copy);
+  });
+
+  test('returns an empty array for an empty list', () => {
+    assert.deepEqual(sortByHours([]), []);
+  });
+
+  test('sorts numerically, not as strings (10 after 9, not before)', () => {
+    const multiDigit = [
+      { id: 1, hoursSaved: 10 },
+      { id: 2, hoursSaved: 9 },
+      { id: 3, hoursSaved: 2.5 },
+    ];
+    assert.deepEqual(sortByHours(multiDigit).map((u) => u.id), [3, 2, 1]);
   });
 });
 

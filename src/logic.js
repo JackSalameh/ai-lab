@@ -59,6 +59,13 @@ export function updateUseCase(useCases, id, candidate) {
   };
 }
 
+export function sortByHours(useCases, direction = 'asc') {
+  const multiplier = direction === 'desc' ? -1 : 1;
+  return [...useCases].sort(
+    (a, b) => multiplier * (Number(a.hoursSaved) - Number(b.hoursSaved))
+  );
+}
+
 export function removeUseCase(useCases, id) {
   return useCases.filter((useCase) => useCase.id !== id);
 }
